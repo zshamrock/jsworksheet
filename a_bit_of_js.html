@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>A bit of JavaScript</title>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />    	
+    	<script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+
+	<link href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" rel="stylesheet" type="text/css" />
+	<link type="text/css" rel="Stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeEclipse.css"/>
+
+	<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js" type="text/javascript"></script>
+	<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJScript.js" type="text/javascript"></script>
+	<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shAutoloader.js" type="text/javascript"></script>
+
+	<link rel="stylesheet" type="text/css" href="codemirror-2.35/lib/codemirror.css">
+	
+	<script type="text/javascript" src="codemirror-2.35/lib/codemirror.js"></script>
+	<script type="text/javascript" src="codemirror-2.35/lib/util/javascript-hint.js"></script>	
+
+	<script type="text/javascript" src="codemirror-2.35/lib/util/simple-hint.js"></script>
+    	<link rel="stylesheet" type="text/css" href="codemirror-2.35/lib/util/simple-hint.css">
+    	<script type="text/javascript" src="codemirror-2.35/lib/util/javascript-hint.js"></script>
+	<script type="text/javascript" src="codemirror-2.35/mode/javascript/javascript.js"></script>		
+
+
+	<script src="console.js" type="text/javascript"></script>
+</head>
+<script type="text/javascript">
+	$(function() {
+		$( "#tabs" ).tabs();
+    	});
+</script>
+
+<body>
+<h1>A bit of JavaScript</h1>
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">Extensible</a></li>
+        <li><a href="#tabs-2">Prototype</a></li>
+        <li><a href="#tabs-3">Equality</a></li>
+        <li><a href="#tabs-4">Types</a></li>
+        <li><a href="#tabs-5">Hoisting</a></li>
+        <li><a href="#tabs-6">Visibility</a></li>
+        <li><a href="#tabs-7">Undefined</a></li>
+    </ul>
+    <div id="tabs-1">        
+    	<pre class="brush: js">
+		var console = console || {
+			log: function() {
+				alert("mimic the console!");
+			}
+		}
+	</pre>
+    </div>
+    <div id="tabs-2">
+    	<pre class="brush: js">    
+	    	function Foo() {}
+	    	var foo = new Foo();
+	    	foo.constructor === Foo;    
+    	</pre>
+    </div>
+    <div id="tabs-3">
+    	<pre class="brush: js">
+		""           ==   "0"           // false
+		0            ==   ""            // true
+		0            ==   "0"           // true
+		false        ==   "false"       // false
+		false        ==   "0"           // true
+		false        ==   undefined     // false
+		false         ==   null          // false
+		null          ==   undefined     // true
+		" \t\r\n"    ==   0             // true
+
+		// BUT
+
+		""           ===   "0"           // false
+		0            ===   ""            // false
+		0            ===   "0"           // false
+		false        ===   "false"       // false
+		false        ===   "0"           // false
+		false        ===   undefined     // false
+		false        ===   null          // false
+		null         ===   undefined     // false
+		" \t\r\n"    ===   0             // false
+	</pre>        
+    </div>
+    <div id="tabs-4">
+    	<pre class="brush: js">        
+    		[false.toString(),
+    		(2).toString(),
+    		2 .toString(),
+    		2..toString()]  
+    		Object.prototype.toString.call([]);
+    		Object.prototype.toString.call([]).slice(8, -1);  		
+
+    		!!"value";
+    	</pre>	
+    </div>
+    <div id="tabs-5"> 
+    	<pre class="brush: js">        
+    		if (!secret) {
+    			var secret = "my secret";
+    		}
+    		secret;
+    		Foo();
+    		function Foo() {}
+    		bar();
+    		var bar = function() {}
+    		xyz;
+    		var xyz;      		  		    		
+    	</pre>	       
+    </div>
+    <div id="tabs-6"> 
+    	<pre class="brush: js">
+    		var bar = function Bar(x) {
+    			if (x) {    				
+    				Bar(0);
+    			}    			
+    		};
+    		Bar(1);
+    	</pre>
+    </div>		
+    <div id="tabs-7"> 
+    	<pre class="brush: js">
+    		var undefined = 10;
+    		undefined;
+    		(function(undefined) {
+    			undefined;
+    		})();
+    		(function() {
+    			var undefined;
+    			undefined;
+    		})();
+    	</pre>
+    </div>		
+</div>
+
+<button onclick="doEval()">Run</button>
+<div>
+	<table style="width: 100%; border: solid 1px black;"  >
+		<tr>
+			<td style="width: 50%; border: solid 1px black;">
+				<textarea id="console">
+					
+				</textarea>			
+			</td>
+			<td style="width: 50%">
+				<textarea id="output" rows="10" cols="50" style="width: 100%; height: 100%;">
+					
+				</textarea>
+			</td>
+		</tr>
+	</table>	
+</div>
+<script type="text/javascript">
+	var _console = console;
+	var _alert = alert;
+
+	SyntaxHighlighter.all();
+	
+	CodeMirror.commands.doEval0 = function(cm) {		
+       		doEval();
+      	};
+      	CodeMirror.commands.autocomplete = function(cm) {
+        		CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+      	};	
+      	CodeMirror.commands.processLines = function(cm) {
+      		doEvalLineByLine();        		
+      	};
+      	
+	var myCodeMirror = CodeMirror.fromTextArea($("#console").get(0), {
+		mode: "javascript",
+		lineNumbers: true,
+		matchBrackets: true,
+		extraKeys: {"Ctrl-R": "doEval0", "Ctrl-Space": "autocomplete", "Ctrl-X": "processLines"}
+	});
+
+
+	function doEval() {
+		var _console = console;
+
+		var code = myCodeMirror.getValue();			
+		try {
+			var output = eval(code);
+			$("#output").val(output);
+		} catch (e) {
+			$("#output").val(e);
+		}		
+	}
+	
+	function doEvalLineByLine() {
+		var totalLines = myCodeMirror.lineCount(),
+			i,
+			line,
+			lines = [],
+			evaluation = [],
+			code,
+			evaluationResult,
+			linesInProgress = [],
+			globalCode;
+		
+		var alert = function() {}
+		var console = {
+			log : function() {}
+		};
+		var globalEval = eval;
+			
+		for (i = 0; i < totalLines; i++) {
+			line = myCodeMirror.getLine(i).trimRight();
+			lines.push(line);
+			linesInProgress.push(line);
+			if ( ( (line.length  && line[line.length - 1] === ";") || i === totalLines - 1) && line.trimLeft() )  {						
+				if (line.trimLeft().indexOf("var")) {
+					code = lines.join("\n");
+					try {
+						evaluationResult = (function() { return eval(code); })();
+						evaluation.push(linesInProgress.join("\n") + "\t\t\t>>> " + evaluationResult);
+						linesInProgress = [];
+					} catch (e) {					
+					}
+				} else {
+					evaluation.push(linesInProgress.join("\n") + "\t\t\t>>> " + undefined);
+					linesInProgress = [];					
+				}
+			}			
+		}
+
+		
+		$("#output").val(evaluation.join("\n"));
+
+		alert = _alert;
+		console = _console;
+		try {			
+			eval(lines.join("\n"));
+		} catch (e) {
+			$("#output").val($("#output").val() + "\n\n========== Error ==========\n" + e);
+		}
+	}
+
+	String.prototype.trimRight = String.prototype.trimRight || function() {
+		return this.replace(/\s+$/g, "");
+	};
+
+	String.prototype.trimLeft = String.prototype.trimLeft || function() {
+		return this.replace(/^\s+/g, "");
+	};
+</script>
+</body>
+</html>
