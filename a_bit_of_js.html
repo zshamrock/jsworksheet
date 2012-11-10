@@ -148,18 +148,24 @@
     </div>		
 </div>
 
-<button onclick="doEval()">Run</button>
+<button onclick="doEval()">Run</button><span> (Ctrl-R)</span>
+<button onclick="doEval()">Evaluate</button><span>(Ctrl-X)</span>
 <div>
-	<table style="width: 100%; border: solid 1px gray;"  >
-		<tr>
-			<td>
-				<textarea id="console"></textarea>			
+	<span>Type or paste your code below (Ctrl-R - run, Ctrl-X - evaluate)</span>
+	<table style="width: 100%">
+		<tr style="width: 100%">
+			<td style="width: 50%; padding: 0px;">
+				<textarea id="console"></textarea>
 			</td>
-			<td>
-				<div id="output" style="vertical-align: top;"></div>
+			<td style="width: 50%; vertical-align: top;">				
+				<div class="CodeMirror">
+					<div class="cm-s-default">
+						<div id="output"></div>
+					</div>
+				</div>
 			</td>
 		</tr>
-	</table>	
+	</table>			
 </div>
 <script type="text/javascript">
 	var _console = console;
@@ -206,44 +212,70 @@
 			code,
 			evaluationResult,
 			linesInProgress = [],
-			globalCode;
+			globalCode,
+			lineHandle;
 		
 		var alert = function() {}
 		var console = {
 			log : function() {}
 		};
-		var globalEval = eval;
-			
-		for (i = 0; i < totalLines; i++) {
-			line = myCodeMirror.getLine(i).trimRight();
-			lines.push(line);
-			linesInProgress.push(line);
-			if ( ( (line.length  && line[line.length - 1] === ";") || i === totalLines - 1) && line.trimLeft() )  {						
-				if (line.trimLeft().indexOf("var")) {
-					code = lines.join("\n");
-					try {
-						evaluationResult = (function() { return eval(code); })();
-						evaluation.push("<pre>" + linesInProgress.join("\n") + "</pre>\t\t\t<span class='evaluation'>&gt;&gt;&gt; " + evaluationResult + "</span><br/>");
-						linesInProgress = [];
-					} catch (e) {					
-					}
-				} else {
-					evaluation.push("<pre>" + linesInProgress.join("\n") + "</pre>\t\t\t<span class='evaluation'>&gt;&gt;&gt; " + undefined + "</span><br/>");
-					linesInProgress = [];					
-				}
-			}			
-		}
-
 		
-		$("#output").html(evaluation.join("\n"));
+		$("#output").html("");
 
-		alert = _alert;
-		console = _console;
-		try {			
-			eval(lines.join("\n"));
-		} catch (e) {
-			$("#output").val($("#output").val() + "\n\n========== Error ==========\n" + e);
-		}
+		setTimeout(function() {
+			for (i = 0; i < totalLines; i++) {
+				lineHandle = myCodeMirror.getLineHandle(i);
+				line = myCodeMirror.getLine(i).trimRight();
+				
+				lines.push(line);
+
+				linesInProgress.push(buildLineWithCodeMirrorStyles(lineHandle));
+				if ( ( (line.length  && line[line.length - 1] === ";") || i === totalLines - 1) && line.trimLeft() )  {						
+					if (line.trimLeft().indexOf("var")) {
+						code = lines.join("\n");
+						try {
+							evaluationResult = (function() { return eval(code); })();
+							evaluation.push(linesInProgress.join("<br/>") + "&nbsp;&nbsp;&nbsp;<span class='evaluation'>&gt;&gt;&gt; " + evaluationResult + "</span>");
+							linesInProgress = [];
+						} catch (e) {					
+							$("#output").html($("#output").html() + "<br/><br/><span class='error'>========== Error ==========</span><br/><span class='error'>" + e + "</span>");
+						}
+					} else {
+						evaluation.push(linesInProgress.join("<br/>") + "&nbsp;&nbsp;&nbsp;<span class='evaluation'>&gt;&gt;&gt; " + undefined + "</span>");
+						linesInProgress = [];					
+					}
+				}			
+			}
+
+			
+			$("#output").html(evaluation.join("<br/>"));
+
+			alert = _alert;
+			console = _console;
+			try {			
+				eval(lines.join("\n"));
+			} catch (e) {
+				$("#output").html($("#output").html() + "<br/><br/><span class='error'>========== Error ==========</span><br/><span class='error'>" + e + "</span>");
+			}
+		}, $("#output").length ? 100 : 0);
+	}
+
+	function buildLineWithCodeMirrorStyles(lineHandle) {
+		var styles = lineHandle.styles, 
+			text,
+			style,
+			i,			
+			styledLines = [];
+		for (i = 0; i < styles.length; i += 2) {
+			text = styles[i];
+			style = styles[i+1];
+			if (style) {
+				styledLines.push("<span class='cm-" + style + "'>" + text + "</span>");
+			} else {
+				styledLines.push(text);
+			}
+		}	
+		return "<pre>" + styledLines.join("") + "</pre>";
 	}
 
 	String.prototype.trimRight = String.prototype.trimRight || function() {
