@@ -235,6 +235,9 @@
 						code = lines.join("\n");
 						try {
 							evaluationResult = (function() { return eval(code); })();
+							if (evaluationResult && isArray(evaluationResult)) {
+								evaluationResult = "[" + evaluationResult + "]";
+							}
 							evaluation.push(linesInProgress.join("<br/>") + "&nbsp;&nbsp;&nbsp;<span class='evaluation'>&gt;&gt;&gt; " + evaluationResult + "</span>");
 							linesInProgress = [];
 						} catch (e) {					
@@ -276,6 +279,10 @@
 			}
 		}	
 		return "<pre>" + styledLines.join("") + "</pre>";
+	}
+
+	function isArray(obj) {
+		return Object.prototype.toString.call(obj).slice(8, -1) === "Array";
 	}
 
 	String.prototype.trimRight = String.prototype.trimRight || function() {
