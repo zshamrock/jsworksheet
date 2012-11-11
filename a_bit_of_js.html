@@ -242,11 +242,11 @@
 							}
 							evaluation.push(colorizeEvaluationResult(linesInProgress, evaluationResult));
 							linesInProgress = [];
-						} catch (e) {					
-							$("#output").html($("#output").html() + "<br/><br/><span class='error'>========== Error ==========</span><br/><span class='error'>" + e + "</span>");
+						} catch (e) {	
+							// TODO: process error during the evaluation ?					
+							// ignore errors during the evaluation
 						}
 					} else {
-
 						evaluation.push(colorizeEvaluationResult(linesInProgress));
 						linesInProgress = [];					
 					}
@@ -260,14 +260,22 @@
 			console = _console;
 			try {			
 				eval(lines.join("\n"));
-			} catch (e) {
-				$("#output").html($("#output").html() + "<br/><br/><span class='error'>========== Error ==========</span><br/><span class='error'>" + e + "</span>");
+			} catch (e) {				
+				addErrorToOutput(e);				
 			}
 		}, $("#output").length ? 100 : 0);
 	}
 
 	function colorizeEvaluationResult(linesInProgress, evaluationResult) {
 		return linesInProgress.join("<br/>") + "&nbsp;&nbsp;&nbsp;<span class='evaluation'>&gt;&gt;&gt; " + evaluationResult + "</span>";
+	}
+
+	function addErrorToOutput(error) {
+		$("#output").html($("#output").html() + "<br/><br/>" + colorizeError(error));
+	}
+
+	function colorizeError(error) {
+		return "<span class='error'>========== Error ==========</span><br/><span class='error'>" + error + "</span>";
 	}
 
 	function buildLineWithCodeMirrorStyles(lineHandle) {
