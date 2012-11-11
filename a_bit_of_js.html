@@ -55,6 +55,8 @@
         <li><a href="#tabs-5">Hoisting</a></li>
         <li><a href="#tabs-6">Visibility</a></li>
         <li><a href="#tabs-7">Undefined</a></li>
+        <li><a href="#bonus">Bonus</a></li>
+        <li><a href="#todo">TODO</a></li>
     </ul>
     <div id="tabs-1">        
     	<pre class="brush: js">
@@ -145,7 +147,24 @@
     			undefined;
     		})();
     	</pre>
-    </div>		
+    </div>
+    <div id="bonus">
+    	<pre class="brush: js">
+		var numbers = [1, 2, 3, 4];
+		var doubled = numbers.map(function(i) { return i * 2; });
+		doubled;
+
+		var evens = numbers.filter(function(i) { return i % 2 === 0; });
+		evens;
+    	</pre>
+    </div>
+    <div id="todo">
+    	<ol>
+    		<li>evaluate value of the variables</li>
+    		<li>for functions print "undefined"</li>
+    		<li>display errors on the actual line, where possible</li>
+    	</ol>    		    	
+    </div>
 </div>
 
 <button onclick="doEval()">Run</button><span> (Ctrl-R)</span>
@@ -238,13 +257,14 @@
 							if (evaluationResult && isArray(evaluationResult)) {
 								evaluationResult = "[" + evaluationResult + "]";
 							}
-							evaluation.push(linesInProgress.join("<br/>") + "&nbsp;&nbsp;&nbsp;<span class='evaluation'>&gt;&gt;&gt; " + evaluationResult + "</span>");
+							evaluation.push(colorizeEvaluationResult(linesInProgress, evaluationResult));
 							linesInProgress = [];
 						} catch (e) {					
 							$("#output").html($("#output").html() + "<br/><br/><span class='error'>========== Error ==========</span><br/><span class='error'>" + e + "</span>");
 						}
 					} else {
-						evaluation.push(linesInProgress.join("<br/>") + "&nbsp;&nbsp;&nbsp;<span class='evaluation'>&gt;&gt;&gt; " + undefined + "</span>");
+
+						evaluation.push(colorizeEvaluationResult(linesInProgress));
 						linesInProgress = [];					
 					}
 				}			
@@ -261,6 +281,10 @@
 				$("#output").html($("#output").html() + "<br/><br/><span class='error'>========== Error ==========</span><br/><span class='error'>" + e + "</span>");
 			}
 		}, $("#output").length ? 100 : 0);
+	}
+
+	function colorizeEvaluationResult(linesInProgress, evaluationResult) {
+		return linesInProgress.join("<br/>") + "&nbsp;&nbsp;&nbsp;<span class='evaluation'>&gt;&gt;&gt; " + evaluationResult + "</span>";
 	}
 
 	function buildLineWithCodeMirrorStyles(lineHandle) {
