@@ -29,6 +29,7 @@
 <script type="text/javascript">
 	$(function() {
 		$( "#tabs" ).tabs();
+		$("button").button();
     	});
 </script>
 <style type="text/css">
@@ -38,6 +39,10 @@
 	.evaluation {
 		color: blue;
 		font-style: italic;
+	}
+	.tip {
+		font-style: italic;
+		color: gray;
 	}
 	div#output pre {
 		display: inline;
@@ -163,13 +168,14 @@
     		<li>evaluate value of the variables</li>
     		<li>for functions print "undefined"</li>
     		<li>display errors on the actual line, where possible</li>
+    		<li>add tests (jasmine? or qunit?)</li>
     	</ol>    		    	
     </div>
 </div>
 
 <button onclick="doEvaluate()">Evaluate</button><span>(Ctrl-X)</span>
 <div>
-	<span>Type or paste your code below (Ctrl-X - evaluate)</span>
+	<span class="tip">Type or paste your code below (Ctrl-X - evaluate):</span>
 	<table style="width: 100%">
 		<tr style="width: 100%">
 			<td style="width: 50%; padding: 0px;">
