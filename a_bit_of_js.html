@@ -167,10 +167,9 @@
     </div>
 </div>
 
-<button onclick="doEval()">Run</button><span> (Ctrl-R)</span>
-<button onclick="doEval()">Evaluate</button><span>(Ctrl-X)</span>
+<button onclick="doEvaluate()">Evaluate</button><span>(Ctrl-X)</span>
 <div>
-	<span>Type or paste your code below (Ctrl-R - run, Ctrl-X - evaluate)</span>
+	<span>Type or paste your code below (Ctrl-X - evaluate)</span>
 	<table style="width: 100%">
 		<tr style="width: 100%">
 			<td style="width: 50%; padding: 0px;">
@@ -190,39 +189,23 @@
 	var _console = console;
 	var _alert = alert;
 
-	SyntaxHighlighter.all();
+	SyntaxHighlighter.all();	
 	
-	CodeMirror.commands.doEval0 = function(cm) {		
-       		doEval();
-      	};
       	CodeMirror.commands.autocomplete = function(cm) {
         		CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
       	};	
-      	CodeMirror.commands.processLines = function(cm) {
-      		doEvalLineByLine();        		
+      	CodeMirror.commands.evaluate = function(cm) {
+      		doEvaluate();        		
       	};
       	
 	var myCodeMirror = CodeMirror.fromTextArea($("#console").get(0), {
 		mode: "javascript",
 		lineNumbers: true,
 		matchBrackets: true,
-		extraKeys: {"Ctrl-R": "doEval0", "Ctrl-Space": "autocomplete", "Ctrl-X": "processLines"}
-	});
-
-
-	function doEval() {
-		var _console = console;
-
-		var code = myCodeMirror.getValue();			
-		try {
-			var output = eval(code);
-			$("#output").val(output);
-		} catch (e) {
-			$("#output").val(e);
-		}		
-	}
+		extraKeys: {"Ctrl-Space": "autocomplete", "Ctrl-X": "evaluate"}
+	});	
 	
-	function doEvalLineByLine() {
+	function doEvaluate() {
 		var totalLines = myCodeMirror.lineCount(),
 			i,
 			line,
