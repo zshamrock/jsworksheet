@@ -165,8 +165,7 @@
     </div>
     <div id="todo">
     	<ol>
-    		<li>evaluate value of the variables</li>
-    		<li>for functions print "undefined"</li>
+    		<li>evaluate value of the variables</li>    		
     		<li>display errors on the actual line, where possible</li>
     		<li>add tests (jasmine? or qunit?)</li>
     	</ol>    		    	
@@ -209,7 +208,12 @@
 		lineNumbers: true,
 		matchBrackets: true,
 		extraKeys: {"Ctrl-Space": "autocomplete", "Ctrl-X": "evaluate"}
-	});	
+	});
+
+	var evaluationOptions = {
+		evaluateVar: true,
+		evaluateOnSemicolon: false
+	};	
 	
 	function doEvaluate() {
 		var totalLines = myCodeMirror.lineCount(),
@@ -253,11 +257,13 @@
 				lines.push(line);
 
 				linesInProgress.push(buildLineWithCodeMirrorStyles(lineHandle));
-				if ( line.trimLeft() && ( (line.length  && (line[line.length - 1] === ";" || line[line.length - 1] === "}")) || i === totalLines - 1) )  {								
-					if (line.trimLeft().indexOf("var") !== 0) {
-						code = lines.join("\n");
+				if ( line.trimLeft() && ( (line.length  && (line[line.length - 1] === ";" || line[line.length - 1] === "}")) || i === totalLines - 1) )  {
+
+					evaluationResult = undefined;
+					code = lines.join("\n");
+					if (line.trimLeft().indexOf("var") !== 0) {						
 						try {
-							evaluationResult = (function() { return eval(code); })();
+							evaluationResult = evaluateCode(code);
 							if (evaluationResult && isArray(evaluationResult)) {
 								evaluationResult = "[" + evaluationResult + "]";
 							}
@@ -266,12 +272,23 @@
 							}
 							evaluation.push(colorizeEvaluationResult(linesInProgress, evaluationResult));
 							linesInProgress = [];
-						} catch (e) {	
-							// TODO: process error during the evaluation ?					
+						} catch (e) {								
 							// ignore errors during the evaluation
 						}
 					} else {
-						evaluation.push(colorizeEvaluationResult(linesInProgress));
+						if (evaluationOptions.evaluateVar) {
+							try {								
+								// check if code is valid, i.e. can be evaluated
+								evaluateCode(code);
+								// code is valid, try to get the var value
+								code += ("\n" + line.trimLeft().replace(/^var\s+/, ""));
+								evaluationResult = evaluateCode(code);
+							} catch (e) {								
+								// ignore errors during the evaluation
+							}
+						} 
+
+						evaluation.push(colorizeEvaluationResult(linesInProgress, evaluationResult));		
 						linesInProgress = [];					
 					}
 				}			
@@ -288,6 +305,10 @@
 				addErrorToOutput(e);				
 			}
 		}, $("#output").length ? 100 : 0);
+	}
+
+	function evaluateCode(code) {
+		return (function() { return eval(code); })();
 	}
 
 	function colorizeEvaluationResult(linesInProgress, evaluationResult) {
