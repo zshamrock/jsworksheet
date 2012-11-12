@@ -221,7 +221,10 @@
 			evaluationResult,
 			linesInProgress = [],
 			globalCode,
-			lineHandle;
+			lineHandle,
+			functionDetected = false,
+			resetFunctionDetected = false,
+			matchingBraces = 0;			
 		
 		var alert = function() {}
 		var console = {
@@ -235,16 +238,31 @@
 				lineHandle = myCodeMirror.getLineHandle(i);
 				line = myCodeMirror.getLine(i).trimRight();
 				
+				if (resetFunctionDetected) {
+					functionDetected = false;
+					resetFunctionDetected = false;
+				}
+				functionDetected = functionDetected || line.toLowerCase().indexOf("function") !== -1;
+				if (functionDetected) {					
+					matchingBraces += ( (line.split("{").length - 1) - (line.split("}").length - 1) );			
+					if (matchingBraces === 0) {
+						resetFunctionDetected = true;
+					}	
+				}								
+
 				lines.push(line);
 
 				linesInProgress.push(buildLineWithCodeMirrorStyles(lineHandle));
-				if ( ( (line.length  && line[line.length - 1] === ";") || i === totalLines - 1) && line.trimLeft() )  {						
-					if (line.trimLeft().indexOf("var")) {
+				if ( line.trimLeft() && ( (line.length  && (line[line.length - 1] === ";" || line[line.length - 1] === "}")) || i === totalLines - 1) )  {								
+					if (line.trimLeft().indexOf("var") !== 0) {
 						code = lines.join("\n");
 						try {
 							evaluationResult = (function() { return eval(code); })();
 							if (evaluationResult && isArray(evaluationResult)) {
 								evaluationResult = "[" + evaluationResult + "]";
+							}
+							if (functionDetected && matchingBraces === 0) {
+								evaluationResult = undefined;
 							}
 							evaluation.push(colorizeEvaluationResult(linesInProgress, evaluationResult));
 							linesInProgress = [];
