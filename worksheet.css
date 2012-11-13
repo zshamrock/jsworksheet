@@ -1,0 +1,18 @@
+.error {
+    color: red;
+}
+.evaluation {
+    color: blue;
+    font-style: italic;
+}
+.tip {
+    font-style: italic;
+    color: gray;
+}
+div#output pre {
+    display: inline;
+}
+
+.CodeMirror {
+    font-size: 16px;
+}
