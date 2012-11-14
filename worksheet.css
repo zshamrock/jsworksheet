@@ -1,3 +1,11 @@
+body, button {
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+.ui-button-text {
+    font-size: 14px;
+}
+
 .error {
     color: red;
 }
@@ -8,6 +16,7 @@
 .tip {
     font-style: italic;
     color: gray;
+    font-family: Lucida Console, Monaco5, monospace;
 }
 div#output pre {
     display: inline;
