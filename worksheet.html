@@ -16,7 +16,7 @@
     <script type="text/javascript" src="codemirror-2.35/lib/util/simple-hint.js"></script>
     <script type="text/javascript" src="codemirror-2.35/lib/util/javascript-hint.js"></script>
 
-    <link rel="stylesheet" href="worksheet.css">
+    <link rel="stylesheet" type="text/css" href="worksheet.css">
     <script type="text/javascript" src="worksheet.js"></script>
 
 </head>
@@ -34,6 +34,8 @@
                 doEvaluate(worksheetCodeMirror, $("#output"));
             }
         });
+
+        evaluationOptions.evaluateVar = $("#evaluateVar").is(":checked");
     });
 </script>
 
@@ -51,7 +53,7 @@
 			</td>
 			<td style="width: 50%; vertical-align: top;">				
 				<div class="CodeMirror">
-					<div class="cm-s-eclipse">
+					<div class="cm-s-default">
 						<div id="output"></div>
 					</div>
 				</div>
@@ -80,7 +82,7 @@
         mode:"javascript",
         lineNumbers:true,
         matchBrackets:true,
-        theme:"eclipse",
+        //theme:"eclipse",
         autofocus: true,
         extraKeys:{"Ctrl-Space":"autocomplete"}
     });
