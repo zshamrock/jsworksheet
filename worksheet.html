@@ -33,6 +33,8 @@
                 doEvaluate(worksheetCodeMirror, $("#output"));
             }
         });
+
+        evaluationOptions.evaluateVar = $("#evaluateVar").is(":checked");
     });
 </script>
 
@@ -40,7 +42,7 @@
 <h1>JS Worksheet</h1>
 
 <button onclick="doEvaluate(worksheetCodeMirror, $('#output'))">Evaluate</button><span>(Ctrl-X)</span>
-<input name="evaluateVar" id="evaluateVar" type="checkbox"><label for="evaluateVar">Evaluate "var" statement on the go</label>
+<input name="evaluateVar" id="evaluateVar" type="checkbox" checked><label for="evaluateVar">Evaluate "var" statement on the go</label>
 <div>
 	<span class="tip">Type or paste your code below (Ctrl-X - evaluate):</span>
 	<table style="width: 100%">
