@@ -24,3 +24,10 @@ div#output pre {
 .CodeMirror {
     font-size: 16px;
 }
+
+/* Auto resize */
+.CodeMirror-scroll {
+    height: auto;
+    overflow-y: hidden;
+    overflow-x: auto;
+}
