@@ -8,7 +8,8 @@ var evaluationOptions = {
 
 function doEvaluate(cm, $output) {
     var totalLines = cm.lineCount(),
-        i,
+        lastLineNum = totalLines - 1,
+        lineNum,
         line,
         lines = [],
         evaluation = [],
@@ -17,32 +18,38 @@ function doEvaluate(cm, $output) {
         linesInProgress = [],
         lineHandle,
         functionDetected = false,
-        resetFunctionDetected = false,
+        resetFunctionDetectedVar = false,
         matchingBraces = 0;
 
     $output.html("");
 
-    setTimeout(function () {
-        for (i = 0; i < totalLines; i++) {
-            lineHandle = cm.getLineHandle(i);
-            line = cm.getLine(i).trimRight();
+    function shouldEvaluateLine() {
+        var isLastLine = lineNum === lastLineNum;
+        return line.trimLeft() &&
+            ((line.endsWith(";") || line.endsWith("}")) || isLastLine);
+    }
 
-            if (resetFunctionDetected) {
+    setTimeout(function () {
+        for (lineNum = 0; lineNum < totalLines; lineNum++) {
+            lineHandle = cm.getLineHandle(lineNum);
+            line = cm.getLine(lineNum).trimRight();
+
+            if (resetFunctionDetectedVar) {
                 functionDetected = false;
-                resetFunctionDetected = false;
+                resetFunctionDetectedVar = false;
             }
             functionDetected = functionDetected || line.toLowerCase().indexOf("function") !== -1;
             if (functionDetected) {
                 matchingBraces += ( (line.split("{").length - 1) - (line.split("}").length - 1) );
                 if (matchingBraces === 0) {
-                    resetFunctionDetected = true;
+                    resetFunctionDetectedVar = true;
                 }
             }
 
             lines.push(line);
 
             linesInProgress.push(buildLineWithCodeMirrorStyles(lineHandle));
-            if (line.trimLeft() && ( (line.length && (line[line.length - 1] === ";" || line[line.length - 1] === "}")) || i === totalLines - 1)) {
+            if (shouldEvaluateLine()) {
 
                 evaluationResult = undefined;
                 code = lines.join("\n");
@@ -136,11 +143,3 @@ function buildLineWithCodeMirrorStyles(lineHandle) {
 function isArray(obj) {
     return Object.prototype.toString.call(obj).slice(8, -1) === "Array";
 }
-
-String.prototype.trimRight = String.prototype.trimRight || function () {
-    return this.replace(/\s+$/g, "");
-};
-
-String.prototype.trimLeft = String.prototype.trimLeft || function () {
-    return this.replace(/^\s+/g, "");
-};
