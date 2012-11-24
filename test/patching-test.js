@@ -5,9 +5,29 @@ test("String.endsWith", function() {
 
     strictEqual("var x = 5;".endsWith(";"), true);
 
+    strictEqual("var x = 5;    ".endsWith(";"), false);
+
     strictEqual("function() {}".endsWith("}"), true);
 
     strictEqual("function() {}".endsWith("{"), false);
+
+    strictEqual("String.endsWith".endsWith("EndsWith"), false);
+});
+
+test("String.startsWith", function() {
+    strictEqual("".startsWith(";"), false);
+
+    strictEqual("".startsWith(""), true);
+
+    strictEqual("var x = 5;".startsWith("var"), true);
+
+    strictEqual("    var x = 5;".startsWith("var"), false);
+
+    strictEqual("function sqr() {}".startsWith("sqr"), false);
+
+    strictEqual("function() {}".startsWith(""), true);
+
+    strictEqual("Function() {}".startsWith("function"), false);
 });
 
 test("String.trimLeft", function() {

@@ -10,6 +10,10 @@ String.prototype.endsWith = String.prototype.endsWith || function(suffix) {
     return this.length ? this.lastIndexOf(suffix) === this.length - 1 : false;
 };
 
+String.prototype.startsWith = String.prototype.startsWith || function(prefix) {
+    return this.indexOf(prefix) === 0;
+};
+
 String.prototype.count = String.prototype.count || function(what) {
     return this.split(what).length - 1;
 };
