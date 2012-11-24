@@ -103,3 +103,11 @@ asyncTest("var statement evaluation on the go for array", 1, function() {
         start();
     }, ASYNC_TEST_TIMEOUT);
 });
+
+test("isArray", function() {
+    strictEqual(isArray([]), true);
+
+    strictEqual(isArray(undefined), false);
+
+    strictEqual(isArray(""), false);
+});
