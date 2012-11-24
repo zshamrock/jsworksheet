@@ -25,3 +25,13 @@ test("String.trimRight", function() {
 
     strictEqual("       ".trimRight(), "");
 });
+
+test("String.count", function() {
+    strictEqual("function() {}".count("{"), 1);
+
+    strictEqual("{{{}{".count("{"), 4);
+
+    strictEqual("}}}}}".count("{"), 0);
+
+    strictEqual("".count("{"), 0);
+});
