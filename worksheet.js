@@ -19,7 +19,8 @@ function doEvaluate(cm, $output) {
         lineHandle,
         functionDetected = false,
         resetFunctionDetectedVar = false,
-        matchingBraces = 0;
+        matchingBraces = 0,
+        evaluated = false;
 
     $output.html("");
 
@@ -50,37 +51,35 @@ function doEvaluate(cm, $output) {
 
             linesInProgress.push(buildLineWithCodeMirrorStyles(lineHandle));
             if (shouldEvaluateLine()) {
-
+                evaluated = false;
                 evaluationResult = undefined;
                 code = lines.join("\n");
-                if (line.trimLeft().indexOf("var") !== 0) {
-                    try {
+                try {
+                    if (line.trimLeft().indexOf("var") !== 0) {
                         evaluationResult = evaluateCode(code);
-                        if (evaluationResult && isArray(evaluationResult)) {
-                            evaluationResult = "[" + evaluationResult + "]";
-                        }
+
                         if (functionDetected && matchingBraces === 0) {
                             evaluationResult = undefined;
                         }
-                        evaluation.push(colorizeEvaluationResult(linesInProgress, evaluationResult));
-                        linesInProgress = [];
-                    } catch (e) {
-                        // ignore errors during the evaluation
-                    }
-                } else {
-                    if (evaluationOptions.evaluateVar) {
-                        try {
+
+                    } else {
+                        if (evaluationOptions.evaluateVar) {
                             // check if code is valid, i.e. can be evaluated
                             evaluateCode(code);
                             // code is valid, try to get the var value
                             code += ("\n" + line.trimLeft().replace(/^var\s+/, ""));
                             evaluationResult = evaluateCode(code);
-                            if (isArray(evaluationResult)) {
-                                evaluationResult = "[" + evaluationResult + "]";
-                            }
-                        } catch (e) {
-                            // ignore errors during the evaluation
                         }
+                    }
+
+                    evaluated = true;
+                } catch (e) {
+                    evaluated = false;
+                }
+
+                if (evaluated) {
+                    if (isArray(evaluationResult)) {
+                        evaluationResult = "[" + evaluationResult + "]";
                     }
 
                     evaluation.push(colorizeEvaluationResult(linesInProgress, evaluationResult));
