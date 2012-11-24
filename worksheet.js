@@ -41,7 +41,7 @@ function doEvaluate(cm, $output) {
             }
             functionDetected = functionDetected || line.toLowerCase().indexOf("function") !== -1;
             if (functionDetected) {
-                matchingBraces += ( (line.split("{").length - 1) - (line.split("}").length - 1) );
+                matchingBraces += ( line.count("{") - line.count("}") );
                 if (matchingBraces === 0) {
                     resetFunctionDetectedVar = true;
                 }
