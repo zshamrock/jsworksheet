@@ -1,12 +1,7 @@
 var _console = console;
 var _alert = alert;
 
-var evaluationOptions = {
-    evaluateVar:false,
-    evaluateOnSemicolon:false
-};
-
-function doEvaluate(cm, $output) {
+function doEvaluate(cm, $output, options) {
     var totalLines = cm.lineCount(),
         lastLineNum = totalLines - 1,
         lineNum,
@@ -21,6 +16,8 @@ function doEvaluate(cm, $output) {
         resetFunctionDetectedVar = false,
         matchingBraces = 0,
         evaluated = false;
+
+    options = options || {evaluateVar:false};
 
     $output.html("");
 
@@ -63,7 +60,7 @@ function doEvaluate(cm, $output) {
                         }
 
                     } else {
-                        if (evaluationOptions.evaluateVar) {
+                        if (options.evaluateVar) {
                             // check if code is valid, i.e. can be evaluated
                             evaluateCode(code);
                             // code is valid, try to get the var value

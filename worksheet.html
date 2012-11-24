@@ -23,27 +23,28 @@
 
 </head>
 <script type="text/javascript">
+
+    function runEvaluate() {
+        doEvaluate(worksheetCodeMirror, $("#output"), {evaluateVar: $("#evaluateVar").is(":checked")});
+    }
+
 	$(function() {
 		$("button").button();
-		$("#evaluateVar").click(function() {
-			evaluationOptions.evaluateVar = $(this).is(":checked");
-		});
+
         $(document).keydown(function(event) {
             var x_key = 88;
 
             if (event.which === x_key && event.ctrlKey) {
-                doEvaluate(worksheetCodeMirror, $("#output"));
+                runEvaluate();
             }
         });
-
-        evaluationOptions.evaluateVar = $("#evaluateVar").is(":checked");
     });
 </script>
 
 <body>
 <h1>JS Worksheet</h1>
 
-<button onclick="doEvaluate(worksheetCodeMirror, $('#output'))">Evaluate</button>&nbsp;<span>(Ctrl-X)</span>&nbsp;
+<button onclick="runEvaluate()">Evaluate</button>&nbsp;<span>(Ctrl-X)</span>&nbsp;
 <input name="evaluateVar" id="evaluateVar" type="checkbox" checked><label for="evaluateVar">Evaluate "var" statement on the go</label>
 <div>
 	<span class="tip">Type or paste your code below (Ctrl-X - evaluate):</span>
