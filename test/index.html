@@ -11,6 +11,12 @@
     <link rel="stylesheet" href="../worksheet.css">
 </head>
 <body>
+<script type="text/javascript">
+    function log(html) {
+        $("#output").html(html);
+    }
+</script>
+
 &gt;&gt;&gt;
 <div class="CodeMirror">
     <div class="cm-s-eclipse">
@@ -19,8 +25,12 @@
 </div>
 
 <div id="qunit"></div>
+<script src="../patching.js"></script>
 <script src="../worksheet.js"></script>
 <script src="qunit/qunit-1.10.0.js"></script>
+
+<!-- Tests -->
+<script src="patching-test.js"></script>
 <script src="worksheet-test.js"></script>
 </body>
 </html>
