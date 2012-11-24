@@ -75,6 +75,9 @@ function doEvaluate(cm, $output) {
                             // code is valid, try to get the var value
                             code += ("\n" + line.trimLeft().replace(/^var\s+/, ""));
                             evaluationResult = evaluateCode(code);
+                            if (isArray(evaluationResult)) {
+                                evaluationResult = "[" + evaluationResult + "]";
+                            }
                         } catch (e) {
                             // ignore errors during the evaluation
                         }
