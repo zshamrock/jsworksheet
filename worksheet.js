@@ -74,7 +74,7 @@ function doEvaluate(cm, $output) {
 
                     evaluated = true;
                 } catch (e) {
-                    evaluated = false;
+                    // ignore errors during the evaluation
                 }
 
                 if (evaluated) {
