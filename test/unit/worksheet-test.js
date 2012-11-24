@@ -40,6 +40,12 @@ test("build line with CodeMirror styles", function() {
     strictEqual(lineWithCodeMirrorStyles, "<pre><span class='cm-keyword'>var</span> <span class='cm-variable'>x</span> = <span class='cm-number'>10</span>;</pre>");
 });
 
+test("colorize evaluation result", function() {
+    var colorizedEvaluationResult = colorizeEvaluationResult(["var x = 10;", "x + 7;"], 7);
+
+    strictEqual(colorizedEvaluationResult, "var x = 10;<br/>x + 7;&nbsp;&nbsp;&nbsp;<span class='evaluation'>&gt;&gt;&gt; 7</span>");
+});
+
 asyncTest("var statement evaluation", 1, function() {
     var codeMirror = mockCodeMirror(
         ["var x = 10;"],
