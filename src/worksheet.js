@@ -75,9 +75,7 @@ function doEvaluate(cm, $output, options) {
                 }
 
                 if (evaluated) {
-                    if (isArray(evaluationResult)) {
-                        evaluationResult = "[" + evaluationResult + "]";
-                    }
+                    evaluationResult = stringify(evaluationResult);
 
                     evaluation.push(colorizeEvaluationResult(linesInProgress, evaluationResult));
                     linesInProgress = [];
@@ -139,6 +137,59 @@ function buildLineWithCodeMirrorStyles(lineHandle) {
     return "<pre>" + styledLines.join("") + "</pre>";
 }
 
+function stringify(obj) {
+    if (isString(obj)) {
+        return '"' + obj + '"';
+    }
+    if (isObject(obj)) {
+        return stringifyObject(obj);
+    }
+    if (isArray(obj)) {
+        return stringifyArray(obj);
+    }
+    return obj;
+}
+
+function stringifyObject(object) {
+    var property,
+        result = [],
+        value;
+
+    for (property in object) {
+        if (object.hasOwnProperty(property)) {
+            value = stringify(object[property]);
+
+            result.push(property + ": " + value);
+        }
+    }
+
+    return "{" + result.join(", ") + "}";
+}
+
+function stringifyArray(array) {
+    var i,
+        element,
+        result = [];
+    for (i = 0; i < array.length; i++) {
+        element = stringify(array[i]);
+        result.push(element);
+    }
+
+    return "[" + result.join(", ") + "]";
+}
+
 function isArray(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === "Array";
+    return getObjectType(obj) === "Array";
+}
+
+function isObject(obj) {
+    return getObjectType(obj) === "Object";
+}
+
+function isString(obj) {
+    return getObjectType(obj) === "String";
+}
+
+function getObjectType(obj) {
+    return Object.prototype.toString.call(obj).slice(8, -1);
 }
