@@ -55,3 +55,27 @@ test("String.count", function() {
 
     strictEqual("".count("{"), 0);
 });
+
+test("String.trim", function() {
+    strictEqual("          ".trim(), "");
+
+    strictEqual("   JavaScript   ".trim(), "JavaScript");
+
+    strictEqual("JavaScript".trim(), "JavaScript");
+});
+
+test("String.isEmpty", function() {
+    strictEqual("".isEmpty(), true);
+
+    strictEqual("         ".isEmpty(), true);
+
+    strictEqual("  JavaScript   ".isEmpty(), false);
+});
+
+test("String.isNotEmpty", function() {
+    strictEqual("".isNotEmpty(), false);
+
+    strictEqual("         ".isNotEmpty(), false);
+
+    strictEqual("  JavaScript   ".isNotEmpty(), true);
+});
