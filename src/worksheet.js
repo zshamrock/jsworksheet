@@ -1,14 +1,10 @@
 var _console = console;
 var _alert = alert;
 
-var evaluationOptions = {
-    evaluateVar:false,
-    evaluateOnSemicolon:false
-};
-
-function doEvaluate(cm, $output) {
+function doEvaluate(cm, $output, options) {
     var totalLines = cm.lineCount(),
-        i,
+        lastLineNum = totalLines - 1,
+        lineNum,
         line,
         lines = [],
         evaluation = [],
@@ -17,61 +13,69 @@ function doEvaluate(cm, $output) {
         linesInProgress = [],
         lineHandle,
         functionDetected = false,
-        resetFunctionDetected = false,
-        matchingBraces = 0;
+        resetFunctionDetectedVar = false,
+        matchingBraces = 0,
+        evaluated = false;
+
+    options = options || {evaluateVar:false};
 
     $output.html("");
 
-    setTimeout(function () {
-        for (i = 0; i < totalLines; i++) {
-            lineHandle = cm.getLineHandle(i);
-            line = cm.getLine(i).trimRight();
+    function shouldEvaluateLine() {
+        var isLastLine = lineNum === lastLineNum;
+        return line.trimLeft() &&
+            ((line.endsWith(";") || line.endsWith("}")) || isLastLine);
+    }
 
-            if (resetFunctionDetected) {
+    setTimeout(function () {
+        for (lineNum = 0; lineNum < totalLines; lineNum++) {
+            lineHandle = cm.getLineHandle(lineNum);
+            line = cm.getLine(lineNum).trimRight();
+
+            if (resetFunctionDetectedVar) {
                 functionDetected = false;
-                resetFunctionDetected = false;
+                resetFunctionDetectedVar = false;
             }
-            functionDetected = functionDetected || line.toLowerCase().indexOf("function") !== -1;
+            functionDetected = functionDetected || line.trimLeft().startsWith("function");
             if (functionDetected) {
-                matchingBraces += ( (line.split("{").length - 1) - (line.split("}").length - 1) );
+                matchingBraces += ( line.count("{") - line.count("}") );
                 if (matchingBraces === 0) {
-                    resetFunctionDetected = true;
+                    resetFunctionDetectedVar = true;
                 }
             }
 
             lines.push(line);
 
             linesInProgress.push(buildLineWithCodeMirrorStyles(lineHandle));
-            if (line.trimLeft() && ( (line.length && (line[line.length - 1] === ";" || line[line.length - 1] === "}")) || i === totalLines - 1)) {
-
+            if (shouldEvaluateLine()) {
+                evaluated = false;
                 evaluationResult = undefined;
                 code = lines.join("\n");
-                if (line.trimLeft().indexOf("var") !== 0) {
-                    try {
+                try {
+                    if (line.trimLeft().indexOf("var") !== 0) {
                         evaluationResult = evaluateCode(code);
-                        if (evaluationResult && isArray(evaluationResult)) {
-                            evaluationResult = "[" + evaluationResult + "]";
-                        }
+
                         if (functionDetected && matchingBraces === 0) {
                             evaluationResult = undefined;
                         }
-                        evaluation.push(colorizeEvaluationResult(linesInProgress, evaluationResult));
-                        linesInProgress = [];
-                    } catch (e) {
-                        // ignore errors during the evaluation
-                    }
-                } else {
-                    if (evaluationOptions.evaluateVar) {
-                        try {
+
+                    } else {
+                        if (options.evaluateVar) {
                             // check if code is valid, i.e. can be evaluated
                             evaluateCode(code);
                             // code is valid, try to get the var value
                             code += ("\n" + line.trimLeft().replace(/^var\s+/, ""));
                             evaluationResult = evaluateCode(code);
-                        } catch (e) {
-                            // ignore errors during the evaluation
                         }
                     }
+
+                    evaluated = true;
+                } catch (e) {
+                    // ignore errors during the evaluation
+                }
+
+                if (evaluated) {
+                    evaluationResult = stringify(evaluationResult);
 
                     evaluation.push(colorizeEvaluationResult(linesInProgress, evaluationResult));
                     linesInProgress = [];
@@ -132,15 +136,3 @@ function buildLineWithCodeMirrorStyles(lineHandle) {
     }
     return "<pre>" + styledLines.join("") + "</pre>";
 }
-
-function isArray(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === "Array";
-}
-
-String.prototype.trimRight = String.prototype.trimRight || function () {
-    return this.replace(/\s+$/g, "");
-};
-
-String.prototype.trimLeft = String.prototype.trimLeft || function () {
-    return this.replace(/^\s+/g, "");
-};
